@@ -25,7 +25,7 @@ public class AuthenticationService {
     public String loginUser(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
-            // Kiểm tra mật khẩu (plaintext)
+
             if (password.equals(user.get().getPassword())) {
                 return "Login successful!";
             } else {

@@ -22,11 +22,12 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestParam String email, @RequestParam String password) {
-        String response = userService.loginUser(email, password);
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
+        String response = userService.loginUser(user.getEmail(), user.getPassword());
         if (response.equals("Login successful!")) {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.badRequest().body(response);
     }
+
 }
