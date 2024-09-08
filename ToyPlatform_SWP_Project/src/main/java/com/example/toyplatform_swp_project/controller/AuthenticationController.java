@@ -1,7 +1,7 @@
 package com.example.toyplatform_swp_project.controller;
 
 import com.example.toyplatform_swp_project.model.User;
-import com.example.toyplatform_swp_project.services.AuthenticationService;
+import com.example.toyplatform_swp_project.services.implement.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
