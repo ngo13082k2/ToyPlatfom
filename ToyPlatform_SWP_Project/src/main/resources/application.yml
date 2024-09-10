@@ -11,5 +11,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-      database: mysql
-      database-platform: org.hibernate.dialect.MySQL8Dialect
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

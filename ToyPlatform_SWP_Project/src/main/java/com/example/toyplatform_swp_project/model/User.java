@@ -3,6 +3,7 @@ package com.example.toyplatform_swp_project.model;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,8 +32,9 @@ public class User {
     private Date modifiedDate = new Date();
 
     private String address;
+    @ManyToMany(mappedBy = "users")
+    private Set<Toy> toys;
 
-    // Getters và setters
     public Long getUserId() {
         return userId;
     }

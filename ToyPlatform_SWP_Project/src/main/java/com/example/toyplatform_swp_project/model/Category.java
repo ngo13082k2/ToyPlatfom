@@ -2,6 +2,8 @@ package com.example.toyplatform_swp_project.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "category")
 public class Category {
@@ -13,7 +15,7 @@ public class Category {
     @Column(nullable = false)
     private String name;
 
-    // Getters và setters
+
     public Long getCategoryId() {
         return categoryId;
     }
@@ -21,7 +23,8 @@ public class Category {
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
-
+    @OneToMany(mappedBy = "category")
+    private List<Toy> toys;
     public String getName() {
         return name;
     }
