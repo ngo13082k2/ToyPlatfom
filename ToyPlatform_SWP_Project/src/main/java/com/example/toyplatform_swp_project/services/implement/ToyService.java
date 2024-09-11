@@ -52,6 +52,57 @@ public class ToyService implements IToyservice {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+    public ToyDto updateToy(Long toyId, ToyDto toyDto, MultipartFile imageFile) throws DataNotFoundException, IOException {
+        Toy existingToy = toyRepository.findById(toyId)
+                .orElseThrow(() -> new DataNotFoundException("Toy not found with id: " + toyId));
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                Map uploadResult = cloudinary.uploader().upload(imageFile.getBytes(), ObjectUtils.emptyMap());
+                String imageUrl = uploadResult.get("url").toString();
+                toyDto.setImage(imageUrl);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload image", e);
+            }
+        } else {
+            toyDto.setImage(existingToy.getImage());
+        }
+
+        existingToy.setName(toyDto.getName());
+        existingToy.setDescription(toyDto.getDescription());
+        existingToy.setPrice(toyDto.getPrice());
+        existingToy.setAmount(toyDto.getAmount());
+        existingToy.setSupplierId(toyDto.getSupplierId());
+        existingToy.setImage(toyDto.getImage());
+
+        Category category = categoryRepository.findById(toyDto.getCategoryId())
+                .orElseThrow(() -> new DataNotFoundException("Category not found with id: " + toyDto.getCategoryId()));
+        existingToy.setCategory(category);
+
+        Toy updatedToy = toyRepository.save(existingToy);
+
+        return mapToDto(updatedToy);
+    }
+    public ToyDto getToyById(Long toyId) throws DataNotFoundException {
+        Toy toy = toyRepository.findById(toyId)
+                .orElseThrow(() -> new DataNotFoundException("Toy not found with id: " + toyId));
+
+        return mapToDto(toy);
+    }
+    public List<ToyDto> getToysByCategory(Long categoryId) throws DataNotFoundException {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new DataNotFoundException("Category not found with id: " + categoryId));
+
+        List<Toy> toys = toyRepository.findByCategory(category);
+        if (toys.isEmpty()) {
+            throw new DataNotFoundException("No toys found for category with id: " + categoryId);
+        }
+        return toys.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+
     private Toy mapToEntity(ToyDto toyDto) throws DataNotFoundException {
         Toy toy = Toy.builder()
                 .name(toyDto.getName())

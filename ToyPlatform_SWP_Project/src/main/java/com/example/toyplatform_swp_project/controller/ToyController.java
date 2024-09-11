@@ -47,4 +47,33 @@ public class ToyController {
         List<ToyDto> toys = toyService.getAllToys();
         return ResponseEntity.ok(toys);
     }
+    @PutMapping("/{toyId}")
+    public ResponseEntity<ToyDto> updateToy(
+            @PathVariable Long toyId,
+            @RequestPart("toy") String toyJson,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws DataNotFoundException, IOException {
+
+        ToyDto toyDto;
+        try {
+            toyDto = objectMapper.readValue(toyJson, ToyDto.class);
+            System.out.println("Received Toy Data: " + toyDto.toString());
+        } catch (IOException e) {
+            throw new RuntimeException("Invalid JSON format", e);
+        }
+
+        ToyDto updatedToy = toyService.updateToy(toyId, toyDto, imageFile);
+        return new ResponseEntity<>(updatedToy, HttpStatus.OK);
+    }
+    @GetMapping("/{toyId}")
+    public ResponseEntity<ToyDto> getToyById(@PathVariable Long toyId) throws DataNotFoundException {
+        ToyDto toyDto = toyService.getToyById(toyId);
+        return new ResponseEntity<>(toyDto, HttpStatus.OK);
+    }
+    @GetMapping("/GetByCategory/{categoryId}")
+    public ResponseEntity<List<ToyDto>> getToysByCategory(@PathVariable Long categoryId) throws DataNotFoundException {
+        List<ToyDto> toyDtos = toyService.getToysByCategory(categoryId);
+        return new ResponseEntity<>(toyDtos, HttpStatus.OK);
+    }
+
+
 }

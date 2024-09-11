@@ -10,4 +10,7 @@ import java.util.List;
 public interface IToyservice {
     ToyDto createToy(ToyDto toyDto, MultipartFile imageFile) throws IOException, DataNotFoundException;
     List<ToyDto> getAllToys();
+    ToyDto updateToy(Long toyId, ToyDto toyDto, MultipartFile imageFile) throws DataNotFoundException, IOException;
+    ToyDto getToyById(Long toyId) throws DataNotFoundException;
+    List<ToyDto> getToysByCategory(Long categoryId) throws DataNotFoundException;
 }
