@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,12 +30,16 @@ public class Toy {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> users;
+    @ManyToMany(mappedBy = "toys")
+    private Set<Supplier> suppliers = new HashSet<>();
+
     private String name;
     private String description;
     private Double price;
     private Integer amount;
     private Long supplierId;
     private String image;
+
     public Long getToyId() {
         return toyId;
     }
@@ -89,4 +94,12 @@ public class Toy {
     public void setImage(String image) {
         this.image = image;
     }
+    public Set<Supplier> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(Set<Supplier> suppliers) {
+        this.suppliers = suppliers;
+    }
+
 }

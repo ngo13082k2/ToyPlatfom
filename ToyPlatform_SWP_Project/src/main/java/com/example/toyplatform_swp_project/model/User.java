@@ -1,16 +1,18 @@
 package com.example.toyplatform_swp_project.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.util.Date;
 import java.util.Set;
-
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+
     private Long userId;
 
     @Column(nullable = false, unique = true)
@@ -32,8 +34,16 @@ public class User {
     private Date modifiedDate = new Date();
 
     private String address;
+
+
     @ManyToMany(mappedBy = "users")
     private Set<Toy> toys;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Supplier supplier;
+
+    public User() {
+
+    }
 
     public Long getUserId() {
         return userId;
@@ -98,4 +108,19 @@ public class User {
     public void setAddress(String address) {
         this.address = address;
     }
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
+    }
+    public Set<Toy> getToys() {
+        return toys;
+    }
+
+    public void setToys(Set<Toy> toys) {
+        this.toys = toys;
+    }
+
 }
