@@ -4,7 +4,6 @@ public class CategoryDTO {
     private Long categoryId;
     private String name;
 
-    // Getters và setters
     public Long getCategoryId() {
         return categoryId;
     }

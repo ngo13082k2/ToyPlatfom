@@ -1,13 +1,102 @@
 package com.example.toyplatform_swp_project.model;
 
-import java.util.Date;
+import jakarta.persistence.*;
+import java.time.LocalDate;
 
+@Entity
+@Table(name = "orders")
 public class Order {
-    private Long orderId;
-    private Date orderDate;
-    private Integer quantity;
-    private Double totalPrice;
-    private String orderType;
-    private String Status;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id")
+    private Long orderId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "rental_id", referencedColumnName = "rental_id")
+    private Rental rental;
+
+    @Column(name = "order_date")
+    private LocalDate orderDate;
+
+    @Column(name = "total_price")
+    private Double totalPrice;
+
+    @Column(name = "order_type")
+    private String orderType; // Ví dụ: "online", "cash on delivery"
+
+    @ManyToOne
+    @JoinColumn(name = "voucher_id", referencedColumnName = "voucher_id")
+    private Voucher voucher;
+
+    @Column(name = "status")
+    private String status;
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Rental getRental() {
+        return rental;
+    }
+
+    public void setRental(Rental rental) {
+        this.rental = rental;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public Voucher getVoucher() {
+        return voucher;
+    }
+
+    public void setVoucher(Voucher voucher) {
+        this.voucher = voucher;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

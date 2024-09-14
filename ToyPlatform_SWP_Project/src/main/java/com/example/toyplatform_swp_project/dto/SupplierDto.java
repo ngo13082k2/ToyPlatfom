@@ -1,6 +1,5 @@
 package com.example.toyplatform_swp_project.dto;
 
-import com.example.toyplatform_swp_project.model.User;
 
 public class SupplierDto {
     private Long supplierId;

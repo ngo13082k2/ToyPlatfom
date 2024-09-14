@@ -41,6 +41,17 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Supplier supplier;
 
+    public Set<Voucher> getVouchers() {
+        return vouchers;
+    }
+
+    public void setVouchers(Set<Voucher> vouchers) {
+        this.vouchers = vouchers;
+    }
+
+    @OneToMany(mappedBy = "user")
+    private Set<Voucher> vouchers;
+
     public User() {
 
     }

@@ -17,6 +17,7 @@ public class Toy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "toy_id")
     private Long toyId;
 
     @ManyToOne

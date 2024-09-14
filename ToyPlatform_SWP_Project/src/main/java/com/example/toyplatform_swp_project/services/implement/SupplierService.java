@@ -35,18 +35,15 @@ import java.util.Set;
         }
         public SupplierDto createSupplier(SupplierDto supplierDto, MultipartFile imageShopFile, MultipartFile backgroundImageFile) throws IOException {
             try {
-                // Tải lên hình ảnh lên Cloudinary
                 Map<String, Object> imageShopUploadResult = cloudinary.uploader().upload(imageShopFile.getBytes(), ObjectUtils.emptyMap());
                 String imageShopUrl = imageShopUploadResult.get("url").toString();
 
                 Map<String, Object> backgroundImageUploadResult = cloudinary.uploader().upload(backgroundImageFile.getBytes(), ObjectUtils.emptyMap());
                 String backgroundImageUrl = backgroundImageUploadResult.get("url").toString();
 
-                // Cập nhật URL hình ảnh vào DTO
                 supplierDto.setImageShop(imageShopUrl);
                 supplierDto.setBackgroundImage(backgroundImageUrl);
 
-                // Tạo và lưu Supplier
                 Supplier supplier = mapToEntity(supplierDto);
                 Supplier savedSupplier = supplierRepository.save(supplier);
                 return mapToDto(savedSupplier);
