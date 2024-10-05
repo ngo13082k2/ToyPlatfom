@@ -5,6 +5,7 @@ import com.example.toyplatform_swp_project.exception.DataNotFoundException;
 import com.example.toyplatform_swp_project.services.IToyservice;
 import com.example.toyplatform_swp_project.services.implement.ToyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,8 @@ public class ToyController {
     @PostMapping("")
     public ResponseEntity<ToyDto> createToy(
             @RequestPart("toy") String toyJson,
-            @RequestPart("imageFile") MultipartFile imageFile) throws DataNotFoundException, IOException {
+            @RequestPart("imageFile") MultipartFile imageFile,
+            HttpSession session) throws DataNotFoundException, IOException {
 
         ToyDto toyDto;
         try {
@@ -39,9 +41,18 @@ public class ToyController {
 
         System.out.println("Received Image: " + imageFile.getOriginalFilename());
 
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        toyDto.setSupplierId(userId);
+
         ToyDto createdToy = toyService.createToy(toyDto, imageFile);
         return new ResponseEntity<>(createdToy, HttpStatus.CREATED);
     }
+
     @GetMapping("")
     public ResponseEntity<List<ToyDto>> getAllToys() {
         List<ToyDto> toys = toyService.getAllToys();
@@ -51,7 +62,8 @@ public class ToyController {
     public ResponseEntity<ToyDto> updateToy(
             @PathVariable Long toyId,
             @RequestPart("toy") String toyJson,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws DataNotFoundException, IOException {
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            HttpSession session) throws DataNotFoundException, IOException {
 
         ToyDto toyDto;
         try {
@@ -61,9 +73,19 @@ public class ToyController {
             throw new RuntimeException("Invalid JSON format", e);
         }
 
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        toyDto.setSupplierId(userId);
+
         ToyDto updatedToy = toyService.updateToy(toyId, toyDto, imageFile);
+
         return new ResponseEntity<>(updatedToy, HttpStatus.OK);
     }
+
     @GetMapping("/{toyId}")
     public ResponseEntity<ToyDto> getToyById(@PathVariable Long toyId) throws DataNotFoundException {
         ToyDto toyDto = toyService.getToyById(toyId);

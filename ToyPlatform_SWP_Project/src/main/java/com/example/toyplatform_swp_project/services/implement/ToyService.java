@@ -68,11 +68,12 @@ public class ToyService implements IToyservice {
             toyDto.setImage(existingToy.getImage());
         }
 
+        // Cập nhật các trường của toy
         existingToy.setName(toyDto.getName());
         existingToy.setDescription(toyDto.getDescription());
         existingToy.setPrice(toyDto.getPrice());
         existingToy.setAmount(toyDto.getAmount());
-        existingToy.setSupplierId(toyDto.getSupplierId());
+        existingToy.setSupplierId(toyDto.getSupplierId());  // SupplierId lấy từ session trong controller
         existingToy.setImage(toyDto.getImage());
 
         Category category = categoryRepository.findById(toyDto.getCategoryId())
@@ -83,6 +84,7 @@ public class ToyService implements IToyservice {
 
         return mapToDto(updatedToy);
     }
+
     public ToyDto getToyById(Long toyId) throws DataNotFoundException {
         Toy toy = toyRepository.findById(toyId)
                 .orElseThrow(() -> new DataNotFoundException("Toy not found with id: " + toyId));

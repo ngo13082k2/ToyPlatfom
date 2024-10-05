@@ -1,10 +1,14 @@
 package com.example.toyplatform_swp_project.model;
 
+import com.example.toyplatform_swp_project.model.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import java.util.Date;
 import java.util.Set;
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User {
@@ -25,7 +29,7 @@ public class User {
     private String password;
 
     @Temporal(TemporalType.DATE)
-    private Date dob;  // Date of Birth
+    private Date dob;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
@@ -35,6 +39,9 @@ public class User {
 
     private String address;
 
+
+
+    private String status;
 
     @ManyToMany(mappedBy = "users")
     private Set<Toy> toys;
@@ -51,7 +58,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<Voucher> vouchers;
-
+    @Enumerated(EnumType.STRING)
+    private Role role;
     public User() {
 
     }
@@ -106,6 +114,19 @@ public class User {
 
     public Date getModifiedDate() {
         return modifiedDate;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setModifiedDate(Date modifiedDate) {

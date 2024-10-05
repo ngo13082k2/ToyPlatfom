@@ -13,6 +13,9 @@ import com.example.toyplatform_swp_project.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class OrderService implements IOrderService {
 
@@ -28,6 +31,8 @@ public class OrderService implements IOrderService {
     @Autowired
     private VoucherRepository voucherRepository;
 
+    @Autowired
+    private AuthenticationService authenticationService;
     public OrderDto createOrder(OrderDto orderDto) {
         Order order = mapToEntity(orderDto);
 
@@ -49,14 +54,27 @@ public class OrderService implements IOrderService {
         Order savedOrder = orderRepository.save(order);
         return mapToDto(savedOrder);
     }
+    public List<OrderDto> getOrdersByUserId() {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        List<Order> orders = orderRepository.findByUserUserId(currentUser.getUserId());
+
+        return orders.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
 
     private Order mapToEntity(OrderDto dto) {
         Order order = new Order();
         order.setOrderId(dto.getOrderId());
 
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
-        order.setUser(user);
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        order.setUser(currentUser);
 
         Rental rental = rentalRepository.findById(dto.getRentalId())
                 .orElseThrow(() -> new RuntimeException("Rental not found with id: " + dto.getRentalId()));

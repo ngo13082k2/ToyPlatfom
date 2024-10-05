@@ -27,7 +27,7 @@ public class Order {
     private Double totalPrice;
 
     @Column(name = "order_type")
-    private String orderType; // Ví dụ: "online", "cash on delivery"
+    private String orderType;
 
     @ManyToOne
     @JoinColumn(name = "voucher_id", referencedColumnName = "voucher_id")
