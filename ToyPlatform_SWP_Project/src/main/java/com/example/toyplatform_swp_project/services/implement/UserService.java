@@ -4,6 +4,7 @@ import com.example.toyplatform_swp_project.dto.UserDTO;
 import com.example.toyplatform_swp_project.model.User;
 import com.example.toyplatform_swp_project.repository.UserRepository;
 import com.example.toyplatform_swp_project.services.IUserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,16 +18,26 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserDTO getUserById(Long userId) {
+    public UserDTO getUserById(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            throw new RuntimeException("Người dùng chưa đăng nhập.");
+        }
+
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isPresent()) {
             return mapToDTO(userOpt.get());
         }
-        throw new RuntimeException("User not found");
+        throw new RuntimeException("Không tìm thấy người dùng.");
     }
 
     @Transactional
-    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+    public UserDTO updateUser(HttpSession session, UserDTO userDTO) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            throw new RuntimeException("Người dùng chưa đăng nhập.");
+        }
+
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isPresent()) {
             User existingUser = userOpt.get();
@@ -34,9 +45,10 @@ public class UserService implements IUserService {
             userRepository.save(updatedUser);
             return mapToDTO(updatedUser);
         }
-        throw new RuntimeException("User not found");
+        throw new RuntimeException("Không tìm thấy người dùng.");
     }
 
+    // Map User entity sang DTO
     private UserDTO mapToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setUserId(user.getUserId());
@@ -78,5 +90,4 @@ public class UserService implements IUserService {
 
         return existingUser;
     }
-
 }
