@@ -10,6 +10,7 @@ import com.example.toyplatform_swp_project.repository.RentalRepository;
 import com.example.toyplatform_swp_project.repository.UserRepository;
 import com.example.toyplatform_swp_project.repository.VoucherRepository;
 import com.example.toyplatform_swp_project.services.IOrderService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,16 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private VoucherRepository voucherRepository;
-
+    @Autowired
+    private HttpSession session;
     @Autowired
     private AuthenticationService authenticationService;
     public OrderDto createOrder(OrderDto orderDto) {
-        Order order = mapToEntity(orderDto);
+        Long rentalId = (Long) session.getAttribute("currentRentalId");
+        if (rentalId == null) {
+            throw new RuntimeException("No rental is currently in session.");
+        }
+        Order order = mapToEntity(orderDto, rentalId);
 
         if (order.getRental() != null) {
             Double rentalPrice = order.getRental().getRentalPrice();
@@ -65,7 +71,7 @@ public class OrderService implements IOrderService {
         return orders.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    private Order mapToEntity(OrderDto dto) {
+    private Order mapToEntity(OrderDto dto,Long rentalId) {
         Order order = new Order();
         order.setOrderId(dto.getOrderId());
 
@@ -76,16 +82,16 @@ public class OrderService implements IOrderService {
 
         order.setUser(currentUser);
 
-        Rental rental = rentalRepository.findById(dto.getRentalId())
-                .orElseThrow(() -> new RuntimeException("Rental not found with id: " + dto.getRentalId()));
+        Rental rental = rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new RuntimeException("Rental not found with id: " + rentalId));
         order.setRental(rental);
 
         order.setOrderDate(dto.getOrderDate());
         order.setOrderType(dto.getOrderType());
 
-        if (dto.getVoucherId() != null) {
-            Voucher voucher = voucherRepository.findById(dto.getVoucherId())
-                    .orElseThrow(() -> new RuntimeException("Voucher not found with id: " + dto.getVoucherId()));
+        if (dto.getVoucherCode() != null) {
+            Voucher voucher = voucherRepository.findByCode(dto.getVoucherCode())
+                    .orElseThrow(() -> new RuntimeException("Voucher not found with code: " + dto.getVoucherCode()));
             order.setVoucher(voucher);
         }
 
@@ -103,7 +109,7 @@ public class OrderService implements IOrderService {
         dto.setTotalPrice(order.getTotalPrice());
         dto.setOrderType(order.getOrderType());
         if (order.getVoucher() != null) {
-            dto.setVoucherId(order.getVoucher().getVoucherId());
+            dto.setVoucherCode(order.getVoucher().getCode());
         }
         dto.setStatus(order.getStatus());
 

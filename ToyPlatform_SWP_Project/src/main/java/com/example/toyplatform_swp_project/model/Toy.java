@@ -1,5 +1,6 @@
 package com.example.toyplatform_swp_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,14 +25,15 @@ public class Toy {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_toy",
-            joinColumns = @JoinColumn(name = "toy_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> users;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "user_toy",
+//            joinColumns = @JoinColumn(name = "toy_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id")
+//    )
+//    private Set<User> users;
     @ManyToMany(mappedBy = "toys")
+    @JsonIgnore
     private Set<Supplier> suppliers = new HashSet<>();
 
     private String name;
@@ -53,12 +55,12 @@ public class Toy {
     public void setCategory(Category category) {
         this.category = category;
     }
-    public Set<User> getUsers() {
-        return users;
-    }
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
+//    public Set<User> getUsers() {
+//        return users;
+//    }
+//    public void setUsers(Set<User> users) {
+//        this.users = users;
+//    }
     public String getName() {
         return name;
     }

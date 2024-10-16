@@ -1,6 +1,7 @@
 package com.example.toyplatform_swp_project.controller;
 
 import com.example.toyplatform_swp_project.dto.OrderDto;
+import com.example.toyplatform_swp_project.services.IOrderService;
 import com.example.toyplatform_swp_project.services.implement.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    private OrderService orderService;
+    private IOrderService orderService;
 
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {

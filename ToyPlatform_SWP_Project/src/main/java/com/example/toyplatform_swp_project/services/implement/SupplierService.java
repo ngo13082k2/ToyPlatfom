@@ -3,26 +3,29 @@ package com.example.toyplatform_swp_project.services.implement;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.toyplatform_swp_project.dto.SupplierDto;
+import com.example.toyplatform_swp_project.model.Order;
 import com.example.toyplatform_swp_project.model.Supplier;
-import com.example.toyplatform_swp_project.model.Toy;
+import com.example.toyplatform_swp_project.repository.OrderRepository;
 import com.example.toyplatform_swp_project.repository.SupplierRepository;
 import com.example.toyplatform_swp_project.repository.ToyRepository;
+import com.example.toyplatform_swp_project.response.OrderResponseDto;
 import com.example.toyplatform_swp_project.services.ISupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 
     public class SupplierService implements ISupplierService {
         @Autowired
         private final Cloudinary cloudinary;
-
+        @Autowired
+        private OrderRepository orderRepository;
 
         private final SupplierRepository supplierRepository;
 
@@ -51,6 +54,31 @@ import java.util.Set;
                 throw new RuntimeException("Failed to upload images", e);
             }
         }
+    public List<OrderResponseDto> getCompletedOrdersBySupplierId(Long supplierId) {
+        List<Order> orders = orderRepository.findCompletedOrdersBySupplierId(supplierId);
+
+        // Ánh xạ từ Order sang OrderResponseDto
+        return orders.stream().map(order -> {
+            OrderResponseDto dto = new OrderResponseDto();
+            dto.setOrderId(order.getOrderId());
+            dto.setUsername(order.getUser().getFullName());
+
+            if (order.getRental() != null) {
+                dto.setToyId(order.getRental().getToy().getToyId());
+                dto.setRentalDuration(order.getRental().getRentalDuration());
+            }
+
+            dto.setOrderDate(order.getOrderDate());
+            dto.setTotalPrice(order.getTotalPrice());
+            dto.setOrderType(order.getOrderType());
+            dto.setStatus(order.getStatus());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public Double calculateTotalRentalRevenueBySupplierId(Long supplierId) {
+        return orderRepository.calculateTotalRentalRevenueBySupplierId(supplierId);
+    }
 
         public SupplierDto mapToDto(Supplier supplier) {
             SupplierDto dto = new SupplierDto();

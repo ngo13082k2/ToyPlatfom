@@ -1,5 +1,6 @@
 package com.example.toyplatform_swp_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +46,7 @@ public class Supplier {
             joinColumns = @JoinColumn(name = "supplier_id"),
             inverseJoinColumns = @JoinColumn(name = "toy_id")
     )
+    @JsonIgnore
     private Set<Toy> toys = new HashSet<>();
 
 

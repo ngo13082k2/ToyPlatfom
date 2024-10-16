@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ToyRepository  extends JpaRepository<Toy, Long> {
     List<Toy> findByCategory(Category category);
+    List<Toy> findBySupplierId(Long supplierId);
 }

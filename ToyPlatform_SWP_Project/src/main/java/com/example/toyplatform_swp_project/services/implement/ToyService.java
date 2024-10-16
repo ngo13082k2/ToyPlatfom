@@ -103,6 +103,15 @@ public class ToyService implements IToyservice {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+    public List<ToyDto> getToysBySupplierId(Long supplierId) throws DataNotFoundException {
+        List<Toy> toys = toyRepository.findBySupplierId(supplierId);
+        if (toys.isEmpty()) {
+            throw new DataNotFoundException("No toys found for supplier with id: " + supplierId);
+        }
+        return toys.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 
 
     private Toy mapToEntity(ToyDto toyDto) throws DataNotFoundException {

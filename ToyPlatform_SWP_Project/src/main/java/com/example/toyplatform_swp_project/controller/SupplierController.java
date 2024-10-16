@@ -1,24 +1,27 @@
 package com.example.toyplatform_swp_project.controller;
 
 import com.example.toyplatform_swp_project.dto.SupplierDto;
+import com.example.toyplatform_swp_project.model.Order;
+import com.example.toyplatform_swp_project.response.OrderResponseDto;
+import com.example.toyplatform_swp_project.services.ISupplierService;
 import com.example.toyplatform_swp_project.services.implement.SupplierService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/suppliers")
 public class SupplierController {
     @Autowired
-    private SupplierService supplierService;
+    private ISupplierService supplierService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -39,5 +42,18 @@ public class SupplierController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+    @GetMapping("/{supplierId}/orders")
+    public List<OrderResponseDto> getCompletedOrdersBySupplierId(@PathVariable Long supplierId) {
+        return supplierService.getCompletedOrdersBySupplierId(supplierId);
+    }
+    @GetMapping("/{supplierId}/total-revenue")
+    public Map<String, Object> getTotalRentalRevenueBySupplierId(@PathVariable Long supplierId) {
+        Double totalRevenue = supplierService.calculateTotalRentalRevenueBySupplierId(supplierId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalRentalRevenue", totalRevenue);
+
+        return response;
     }
 }

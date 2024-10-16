@@ -1,6 +1,7 @@
 package com.example.toyplatform_swp_project.controller;
 
 import com.example.toyplatform_swp_project.dto.CategoryDTO;
+import com.example.toyplatform_swp_project.services.ICategoryService;
 import com.example.toyplatform_swp_project.services.implement.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class CategoryController {
     @Autowired
-    private CategoryService categoryService;
+    private ICategoryService categoryService;
     @PostMapping("")
     public ResponseEntity<CategoryDTO> addCategory(@RequestBody CategoryDTO categoryDTO) {
         CategoryDTO savedCategory = categoryService.addCategory(categoryDTO);

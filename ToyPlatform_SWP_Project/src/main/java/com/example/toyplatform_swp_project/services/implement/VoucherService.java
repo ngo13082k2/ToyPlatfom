@@ -6,12 +6,13 @@ import com.example.toyplatform_swp_project.model.User;
 import com.example.toyplatform_swp_project.model.Voucher;
 import com.example.toyplatform_swp_project.repository.UserRepository;
 import com.example.toyplatform_swp_project.repository.VoucherRepository;
+import com.example.toyplatform_swp_project.services.IVoucherService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
-public class VoucherService {
+public class VoucherService implements IVoucherService {
 
     private final VoucherRepository voucherRepository;
     private final UserRepository userRepository;

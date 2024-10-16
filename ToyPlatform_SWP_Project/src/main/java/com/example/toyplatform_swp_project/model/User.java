@@ -1,6 +1,7 @@
 package com.example.toyplatform_swp_project.model;
 
 import com.example.toyplatform_swp_project.model.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,21 +44,23 @@ public class User {
 
     private String status;
 
-    @ManyToMany(mappedBy = "users")
-    private Set<Toy> toys;
+//    @ManyToMany(mappedBy = "users")
+//    private Set<Toy> toys;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Supplier supplier;
 
-    public Set<Voucher> getVouchers() {
-        return vouchers;
-    }
+//    public Set<Voucher> getVouchers() {
+//        return vouchers;
+//    }
+//
+//    public void setVouchers(Set<Voucher> vouchers) {
+//        this.vouchers = vouchers;
+//    }
 
-    public void setVouchers(Set<Voucher> vouchers) {
-        this.vouchers = vouchers;
-    }
-
-    @OneToMany(mappedBy = "user")
-    private Set<Voucher> vouchers;
+//    @OneToMany(mappedBy = "user")
+//    private Set<Voucher> vouchers;
     @Enumerated(EnumType.STRING)
     private Role role;
     public User() {
@@ -147,12 +150,12 @@ public class User {
     public void setSupplier(Supplier supplier) {
         this.supplier = supplier;
     }
-    public Set<Toy> getToys() {
-        return toys;
-    }
-
-    public void setToys(Set<Toy> toys) {
-        this.toys = toys;
-    }
+//    public Set<Toy> getToys() {
+//        return toys;
+//    }
+//
+//    public void setToys(Set<Toy> toys) {
+//        this.toys = toys;
+//    }
 
 }

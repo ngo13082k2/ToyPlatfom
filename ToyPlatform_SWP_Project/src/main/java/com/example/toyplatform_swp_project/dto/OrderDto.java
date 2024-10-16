@@ -5,14 +5,32 @@ import java.time.LocalDate;
 public class OrderDto {
     private Long orderId;
     private Long userId;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    private String username;
     private Long rentalId;
     private LocalDate orderDate;
     private Double totalPrice;
     private String orderType;
-    private Long voucherId;
+
+    public String getVoucherCode() {
+        return voucherCode;
+    }
+
+    public void setVoucherCode(String voucherCode) {
+        this.voucherCode = voucherCode;
+    }
+
+    private String voucherCode;
     private String status;
 
-    // Getters and Setters
     public Long getOrderId() {
         return orderId;
     }
@@ -61,13 +79,7 @@ public class OrderDto {
         this.orderType = orderType;
     }
 
-    public Long getVoucherId() {
-        return voucherId;
-    }
 
-    public void setVoucherId(Long voucherId) {
-        this.voucherId = voucherId;
-    }
 
     public String getStatus() {
         return status;

@@ -13,4 +13,5 @@ public interface IToyservice {
     ToyDto updateToy(Long toyId, ToyDto toyDto, MultipartFile imageFile) throws DataNotFoundException, IOException;
     ToyDto getToyById(Long toyId) throws DataNotFoundException;
     List<ToyDto> getToysByCategory(Long categoryId) throws DataNotFoundException;
+    List<ToyDto> getToysBySupplierId(Long supplierId) throws DataNotFoundException;
 }
