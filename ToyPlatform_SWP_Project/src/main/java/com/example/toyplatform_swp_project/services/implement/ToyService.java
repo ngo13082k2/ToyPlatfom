@@ -5,8 +5,10 @@ import com.cloudinary.utils.ObjectUtils;
 import com.example.toyplatform_swp_project.dto.ToyDto;
 import com.example.toyplatform_swp_project.exception.DataNotFoundException;
 import com.example.toyplatform_swp_project.model.Category;
+import com.example.toyplatform_swp_project.model.Supplier;
 import com.example.toyplatform_swp_project.model.Toy;
 import com.example.toyplatform_swp_project.repository.CategoryRepository;
+import com.example.toyplatform_swp_project.repository.SupplierRepository;
 import com.example.toyplatform_swp_project.repository.ToyRepository;
 import com.example.toyplatform_swp_project.services.IToyservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,13 @@ public class ToyService implements IToyservice {
     private final Cloudinary cloudinary;
     private final ToyRepository toyRepository;
     private final CategoryRepository categoryRepository;
+    private final SupplierRepository supplierRepository;
 
-    public ToyService(Cloudinary cloudinary, ToyRepository toyRepository, CategoryRepository categoryRepository) {
+    public ToyService(Cloudinary cloudinary, ToyRepository toyRepository, CategoryRepository categoryRepository, SupplierRepository supplierRepository) {
         this.cloudinary = cloudinary;
         this.toyRepository = toyRepository;
         this.categoryRepository = categoryRepository;
+        this.supplierRepository = supplierRepository;
     }
 
     public ToyDto createToy(ToyDto toyDto, MultipartFile imageFile) throws IOException, DataNotFoundException {
@@ -40,7 +44,10 @@ public class ToyService implements IToyservice {
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload image", e);
         }
+        Supplier supplier = supplierRepository.findByUser_UserId(toyDto.getSupplierId())
+                .orElseThrow(() -> new DataNotFoundException("Supplier không tìm thấy với userId: " + toyDto.getSupplierId()));
 
+        toyDto.setSupplierId(supplier.getSupplierId());
         Toy toy = mapToEntity(toyDto);
         Toy savedToy = toyRepository.save(toy);
         return mapToDto(savedToy);
@@ -67,6 +74,10 @@ public class ToyService implements IToyservice {
         } else {
             toyDto.setImage(existingToy.getImage());
         }
+        Supplier supplier = supplierRepository.findByUser_UserId(toyDto.getSupplierId())
+                .orElseThrow(() -> new DataNotFoundException("Supplier không tìm thấy với userId: " + toyDto.getSupplierId()));
+
+        toyDto.setSupplierId(supplier.getSupplierId());
 
         // Cập nhật các trường của toy
         existingToy.setName(toyDto.getName());
