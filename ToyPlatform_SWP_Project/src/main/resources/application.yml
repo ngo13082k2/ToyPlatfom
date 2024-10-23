@@ -17,3 +17,8 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+vnpay:
+  tmn_code: WF0GYR4R
+  hash_secret: KYU6SQGZREITDT5DZP44P2ZE28FJG3J0
+  api_url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return_url:  http://localhost:8080/api/orders/vnpay-return

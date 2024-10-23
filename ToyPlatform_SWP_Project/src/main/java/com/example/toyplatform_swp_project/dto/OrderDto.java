@@ -28,9 +28,21 @@ public class OrderDto {
         this.voucherCode = voucherCode;
     }
 
+
     private String voucherCode;
     private String status;
 
+    private String paymentUrl;
+
+
+
+    public String getPaymentUrl() {
+        return paymentUrl;
+    }
+
+    public void setPaymentUrl(String paymentUrl) {
+        this.paymentUrl = paymentUrl;
+    }
     public Long getOrderId() {
         return orderId;
     }

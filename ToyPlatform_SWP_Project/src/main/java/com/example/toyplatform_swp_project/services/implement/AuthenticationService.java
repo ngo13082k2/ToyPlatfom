@@ -43,7 +43,7 @@ public class AuthenticationService {
         }
         return "User not found!";
     }
-    public User getCurrentUser() {
+    public  User getCurrentUser() {
         return (User) session.getAttribute("currentUser");
     }
     public void logoutUser() {

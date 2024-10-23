@@ -1,8 +1,12 @@
 package com.example.toyplatform_swp_project.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -32,10 +36,17 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "voucher_id", referencedColumnName = "voucher_id")
     private Voucher voucher;
-
+    @Column
+    private String txnRef;
     @Column(name = "status")
     private String status;
+    public String getTxnRef() {
+        return txnRef;
+    }
 
+    public void setTxnRef(String txnRef) {
+        this.txnRef = txnRef;
+    }
     public Long getOrderId() {
         return orderId;
     }

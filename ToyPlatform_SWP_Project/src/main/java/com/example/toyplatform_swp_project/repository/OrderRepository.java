@@ -15,5 +15,6 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findCompletedOrdersBySupplierId(Long supplierId);
     @Query("SELECT SUM(o.rental.rentalPrice) FROM Order o WHERE o.rental.toy.supplierId = ?1 AND o.status = 'completed'")
     Double calculateTotalRentalRevenueBySupplierId(Long supplierId);
+    Order findByTxnRef(String txnRef);
 
 }
