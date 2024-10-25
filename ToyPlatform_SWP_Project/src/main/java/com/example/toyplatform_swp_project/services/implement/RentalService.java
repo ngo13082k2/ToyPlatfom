@@ -55,6 +55,7 @@ public class RentalService implements IRentalService {
 
         rental.setRentalDuration(dto.getRentalDuration());
         rental.setRequestDate(dto.getRequestDate());
+        rental.setQuantity(dto.getQuantity());
         return rental;
     }
 
@@ -66,6 +67,7 @@ public class RentalService implements IRentalService {
         dto.setRentalDuration(rental.getRentalDuration());
         dto.setRequestDate(rental.getRequestDate());
         dto.setRentalPrice(rental.getRentalPrice());
+        dto.setQuantity(rental.getQuantity());
         return dto;
     }
 }
