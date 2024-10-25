@@ -48,7 +48,8 @@ public class RentalService implements IRentalService {
 
             Double toyPrice = toy.getPrice();
             Integer duration = dto.getRentalDuration();
-            Double rentalPrice = (toyPrice != null && duration != null) ? toyPrice * duration : 0.0;
+            int quantity = dto.getQuantity();
+            Double rentalPrice = (toyPrice != null && duration != null) ? toyPrice * duration * quantity : 0.0;
             rental.setRentalPrice(rentalPrice);
         }
 

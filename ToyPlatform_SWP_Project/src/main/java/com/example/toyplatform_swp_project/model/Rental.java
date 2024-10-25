@@ -29,6 +29,16 @@ public class Rental {
     @Column(name = "rental_price")
     private Double rentalPrice; // Giá thuê
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    @Column(name = "quantity")
+    private int quantity;
     @Column(name = "total_price")
     private Double totalPrice; // Tổng giá
 
