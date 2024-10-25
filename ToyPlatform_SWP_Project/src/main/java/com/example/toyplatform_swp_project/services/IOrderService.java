@@ -10,4 +10,5 @@ public interface IOrderService {
     OrderDto createOrder(OrderDto orderDto, HttpServletRequest request);
     List<OrderDto> getOrdersByUserId();
     String processVNPayReturn(HttpServletRequest request) throws UnsupportedEncodingException;
+    OrderDto getOrderDetail(Long orderId);
 }

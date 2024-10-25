@@ -34,7 +34,15 @@ public class OrderDto {
 
     private String paymentUrl;
 
+    public RentalDto getRental() {
+        return rental;
+    }
 
+    public void setRental(RentalDto rental) {
+        this.rental = rental;
+    }
+
+    private RentalDto rental;
 
     public String getPaymentUrl() {
         return paymentUrl;

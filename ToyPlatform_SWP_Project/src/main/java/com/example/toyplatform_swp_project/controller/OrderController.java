@@ -42,4 +42,10 @@ public class OrderController {
         List<OrderDto> orders = orderService.getOrdersByUserId();
         return ResponseEntity.ok(orders);
     }
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDto> getOrderDetail(@PathVariable Long orderId) {
+        OrderDto orderDetail = orderService.getOrderDetail(orderId);
+        return ResponseEntity.ok(orderDetail);
+    }
+
 }

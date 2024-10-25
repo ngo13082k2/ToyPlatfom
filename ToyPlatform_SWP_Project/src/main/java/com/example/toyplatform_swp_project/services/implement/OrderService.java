@@ -2,6 +2,7 @@ package com.example.toyplatform_swp_project.services.implement;
 
 import com.example.toyplatform_swp_project.config.VNPayConfig;
 import com.example.toyplatform_swp_project.dto.OrderDto;
+import com.example.toyplatform_swp_project.dto.RentalDto;
 import com.example.toyplatform_swp_project.model.Order;
 import com.example.toyplatform_swp_project.model.Rental;
 import com.example.toyplatform_swp_project.model.User;
@@ -178,6 +179,46 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
 
         return dto;
     }
+    public OrderDto getOrderDetail(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        return mapToDtoGetRental(order);
+    }
+
+    private OrderDto mapToDtoGetRental(Order order) {
+        OrderDto dto = new OrderDto();
+        dto.setOrderId(order.getOrderId());
+        dto.setUserId(order.getUser().getUserId());
+        dto.setUsername(order.getUser().getFullName());
+        dto.setRentalId(order.getRental().getRentalId());
+        dto.setOrderDate(order.getOrderDate());
+        dto.setTotalPrice(order.getTotalPrice());
+        dto.setOrderType(order.getOrderType());
+        if (order.getVoucher() != null) {
+            dto.setVoucherCode(order.getVoucher().getCode());
+        }
+        dto.setStatus(order.getStatus());
+
+        // Add rental details
+        if (order.getRental() != null) {
+            RentalDto rentalDto = new RentalDto();
+            rentalDto.setRentalId(order.getRental().getRentalId());
+            rentalDto.setRequestDate(order.getRental().getRequestDate());
+            rentalDto.setRentalPrice(order.getRental().getRentalPrice());
+            rentalDto.setTotalPrice(order.getRental().getTotalPrice());
+            rentalDto.setRentalDuration(order.getRental().getRentalDuration());
+            rentalDto.setToy(order.getRental().getToy());
+            rentalDto.setUser(order.getRental().getUser());
+            rentalDto.setQuantity(order.getRental().getQuantity());
+
+
+            dto.setRental(rentalDto);
+        }
+
+        return dto;
+    }
+
     public String generatePaymentUrl(Long amount, String vnpTxnRef, HttpServletRequest request) {
         try {
             String vnp_Version = "2.1.0";
