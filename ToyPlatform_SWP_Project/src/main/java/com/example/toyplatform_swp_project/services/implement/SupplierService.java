@@ -3,6 +3,7 @@ package com.example.toyplatform_swp_project.services.implement;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.toyplatform_swp_project.dto.SupplierDto;
+import com.example.toyplatform_swp_project.exception.DataNotFoundException;
 import com.example.toyplatform_swp_project.model.Order;
 import com.example.toyplatform_swp_project.model.Supplier;
 import com.example.toyplatform_swp_project.repository.OrderRepository;
@@ -54,6 +55,10 @@ import java.util.stream.Collectors;
                 throw new RuntimeException("Failed to upload images", e);
             }
         }
+    public Supplier getSupplierById(Long supplierId) throws DataNotFoundException {
+        return supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new DataNotFoundException("Supplier not found with id: " + supplierId));
+    }
     public List<OrderResponseDto> getCompletedOrdersBySupplierId(Long supplierId) {
         List<Order> orders = orderRepository.findCompletedOrdersBySupplierId(supplierId);
 

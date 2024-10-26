@@ -1,5 +1,6 @@
 package com.example.toyplatform_swp_project.controller;
 
+import com.example.toyplatform_swp_project.services.IDashboardService;
 import com.example.toyplatform_swp_project.services.implement.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class DashboardController {
 
     @Autowired
-    private DashboardService dashboardService;
+    private IDashboardService dashboardService;
 
     @GetMapping("/overview")
     public Map<String, Object> getDashboardOverview() {
@@ -21,7 +22,7 @@ public class DashboardController {
         response.put("totalUsers", dashboardService.getTotalUsers());
         response.put("totalOrders", dashboardService.getTotalOrders());
         response.put("totalRevenue", dashboardService.getTotalRevenue());
-
+        response.put("completedOrders", dashboardService.getCompleteOrder());
         return response;
     }
 }

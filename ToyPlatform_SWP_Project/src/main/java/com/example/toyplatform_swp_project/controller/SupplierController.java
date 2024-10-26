@@ -1,7 +1,9 @@
 package com.example.toyplatform_swp_project.controller;
 
 import com.example.toyplatform_swp_project.dto.SupplierDto;
+import com.example.toyplatform_swp_project.exception.DataNotFoundException;
 import com.example.toyplatform_swp_project.model.Order;
+import com.example.toyplatform_swp_project.model.Supplier;
 import com.example.toyplatform_swp_project.response.OrderResponseDto;
 import com.example.toyplatform_swp_project.services.ISupplierService;
 import com.example.toyplatform_swp_project.services.implement.SupplierService;
@@ -55,5 +57,14 @@ public class SupplierController {
         response.put("totalRentalRevenue", totalRevenue);
 
         return response;
+    }
+    @GetMapping("/{supplierId}")
+    public ResponseEntity<Supplier> getSupplierById(@PathVariable Long supplierId) {
+        try {
+            Supplier supplier = supplierService.getSupplierById(supplierId);
+            return ResponseEntity.ok(supplier);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

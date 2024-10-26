@@ -17,4 +17,6 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     Double calculateTotalRentalRevenueBySupplierId(Long supplierId);
     Order findByTxnRef(String txnRef);
 
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'completed'")
+    Long countCompletedOrders();
 }
