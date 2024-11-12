@@ -14,4 +14,5 @@ public interface IToyservice {
     ToyDto getToyById(Long toyId) throws DataNotFoundException;
     List<ToyDto> getToysByCategory(Long categoryId) throws DataNotFoundException;
     List<ToyDto> getToysBySupplierId(Long supplierId) throws DataNotFoundException;
+    Long getSupplierIdByUserId(Long userId) throws DataNotFoundException;
 }

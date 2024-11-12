@@ -105,5 +105,19 @@ public class ToyController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/toys/user/{userId}")
+    public ResponseEntity<List<ToyDto>> getToysByUserId(@PathVariable Long userId) {
+        try {
+            Long supplierId = toyService.getSupplierIdByUserId(userId);
+
+            List<ToyDto> toys = toyService.getToysBySupplierId(supplierId);
+            return ResponseEntity.ok(toys);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }
