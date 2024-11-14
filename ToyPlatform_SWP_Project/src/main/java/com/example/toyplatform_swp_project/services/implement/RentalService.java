@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class RentalService implements IRentalService {
 
@@ -28,8 +30,15 @@ public class RentalService implements IRentalService {
         }
 
         Rental rental = mapToEntity(rentalDto, currentUser);
+        rental.setRequestDate(LocalDate.now());
+
+        if (rental.getRequestDate() != null && rental.getRentalDuration() != null) {
+            rental.setDueDate(rental.getRequestDate().plusDays(rental.getRentalDuration()));
+        }
+
         Rental savedRental = rentalRepository.save(rental);
         session.setAttribute("currentRentalId", savedRental.getRentalId());
+
         return mapToDto(savedRental);
     }
     public User getCurrentUser() {
@@ -54,8 +63,9 @@ public class RentalService implements IRentalService {
         }
 
         rental.setRentalDuration(dto.getRentalDuration());
-        rental.setRequestDate(dto.getRequestDate());
+        rental.setRequestDate(dto.getRequestDate() != null ? dto.getRequestDate() : LocalDate.now());
         rental.setQuantity(dto.getQuantity());
+
         return rental;
     }
 
@@ -68,7 +78,10 @@ public class RentalService implements IRentalService {
         dto.setRequestDate(rental.getRequestDate());
         dto.setRentalPrice(rental.getRentalPrice());
         dto.setQuantity(rental.getQuantity());
+        dto.setDueDate(rental.getDueDate());
         return dto;
     }
+
+
 }
 

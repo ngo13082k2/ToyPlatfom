@@ -43,6 +43,26 @@ public class Order {
     public String getTxnRef() {
         return txnRef;
     }
+    @Column(name = "request_date")
+    private LocalDate requestDate;
+
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+    public LocalDate getRequestDate() {
+        return requestDate;
+    }
+
+    public void setRequestDate(LocalDate requestDate) {
+        this.requestDate = requestDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
 
     public void setTxnRef(String txnRef) {
         this.txnRef = txnRef;

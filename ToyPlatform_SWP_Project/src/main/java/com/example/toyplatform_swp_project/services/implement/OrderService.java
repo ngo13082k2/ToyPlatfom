@@ -3,19 +3,15 @@ package com.example.toyplatform_swp_project.services.implement;
 import com.example.toyplatform_swp_project.config.VNPayConfig;
 import com.example.toyplatform_swp_project.dto.OrderDto;
 import com.example.toyplatform_swp_project.dto.RentalDto;
-import com.example.toyplatform_swp_project.model.Order;
-import com.example.toyplatform_swp_project.model.Rental;
-import com.example.toyplatform_swp_project.model.User;
-import com.example.toyplatform_swp_project.model.Voucher;
-import com.example.toyplatform_swp_project.repository.OrderRepository;
-import com.example.toyplatform_swp_project.repository.RentalRepository;
-import com.example.toyplatform_swp_project.repository.UserRepository;
-import com.example.toyplatform_swp_project.repository.VoucherRepository;
+import com.example.toyplatform_swp_project.model.*;
+import com.example.toyplatform_swp_project.repository.*;
 import com.example.toyplatform_swp_project.services.IOrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -46,13 +42,18 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private JavaMailSender mailSender;
     @Autowired
     private VoucherRepository voucherRepository;
+    @Autowired
+    private ToyRepository toyRepository;
     @Autowired
     private HttpSession session;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private SupplierRepository supplierRepository;
 
 //    public OrderDto createOrder(OrderDto orderDto) {
 //        Long rentalId = (Long) session.getAttribute("currentRentalId");
@@ -148,7 +149,10 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Rental not found with id: " + rentalId));
         order.setRental(rental);
-
+        if (rental != null) {
+            order.setRequestDate(rental.getRequestDate());
+            order.setDueDate(rental.getDueDate());
+        }
         order.setOrderDate(dto.getOrderDate());
         order.setOrderType(dto.getOrderType());
 
@@ -190,7 +194,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         OrderDto dto = new OrderDto();
         dto.setOrderId(order.getOrderId());
         dto.setUserId(order.getUser().getUserId());
-        dto.setUsername(order.getUser().getFullName());
+        dto.setUsername(order.getUser().getEmail());
         dto.setRentalId(order.getRental().getRentalId());
         dto.setOrderDate(order.getOrderDate());
         dto.setTotalPrice(order.getTotalPrice());
@@ -200,18 +204,19 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         }
         dto.setStatus(order.getStatus());
 
-        // Add rental details
         if (order.getRental() != null) {
+            Rental rental = order.getRental();
             RentalDto rentalDto = new RentalDto();
-            rentalDto.setRentalId(order.getRental().getRentalId());
-            rentalDto.setRequestDate(order.getRental().getRequestDate());
-            rentalDto.setRentalPrice(order.getRental().getRentalPrice());
-            rentalDto.setTotalPrice(order.getRental().getTotalPrice());
-            rentalDto.setRentalDuration(order.getRental().getRentalDuration());
-            rentalDto.setToy(order.getRental().getToy());
-            rentalDto.setUser(order.getRental().getUser());
-            rentalDto.setQuantity(order.getRental().getQuantity());
+            rentalDto.setRentalId(rental.getRentalId());
+            rentalDto.setRequestDate(rental.getRequestDate());
+            rentalDto.setRentalPrice(rental.getRentalPrice());
+            rentalDto.setTotalPrice(rental.getTotalPrice());
+            rentalDto.setRentalDuration(rental.getRentalDuration());
+            rentalDto.setQuantity(rental.getQuantity());
 
+            if (rental.getToy() != null) {
+                rentalDto.setToyName(rental.getToy().getName()); // Lấy tên từ Toy
+            }
 
             dto.setRental(rentalDto);
         }
@@ -317,6 +322,20 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
                 if (order != null) {
                     order.setStatus("completed");
                     orderRepository.save(order);
+
+                    Rental rental = order.getRental();
+                    if (rental != null) {
+                        Toy toy = rental.getToy();
+                        int rentalQuantity = rental.getQuantity();
+                        if (toy != null && toy.getAmount() >= rentalQuantity) {
+                            toy.setAmount(toy.getAmount() - rentalQuantity);
+                            toyRepository.save(toy);
+                        } else {
+                            return "Số lượng đồ chơi không đủ để hoàn tất giao dịch!";
+                        }
+                    } else {
+                        return "Không tìm thấy thông tin thuê đồ chơi phù hợp!";
+                    }
                     return "Thanh toán thành công! Đơn hàng đã được hoàn tất.";
                 } else {
                     return "Không tìm thấy đơn hàng phù hợp!";
@@ -330,6 +349,82 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             System.out.println("Chữ ký VNPay trả về: " + vnpSecureHash);
             return "Chữ ký không hợp lệ!";
         }
+    }
+    public String returnOrder(Long orderId) {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        if (!order.getUser().getUserId().equals(currentUser.getUserId())) {
+            throw new RuntimeException("You are not authorized to return this order.");
+        }
+
+        if (!"completed".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Only completed orders can be returned.");
+        }
+
+        order.setStatus("returned");
+        orderRepository.save(order);
+
+        return "Order has been successfully returned.";
+    }
+    public List<OrderDto> getOrdersByCurrentSupplier() {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
+                .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
+
+        List<Order> orders = orderRepository.findAll().stream()
+                .filter(order -> order.getRental() != null &&
+                        order.getRental().getToy() != null &&
+                        order.getRental().getToy().getSuppliers().contains(supplier))
+                .collect(Collectors.toList());
+
+        return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
+    }
+    public String sendReminderEmail(Long orderId) {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        // Tìm đơn hàng và kiểm tra quyền truy cập
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        // Kiểm tra xem người dùng hiện tại có phải là nhà cung cấp sản phẩm không
+        if (!order.getRental().getToy().getSuppliers().stream()
+                .anyMatch(supplier -> supplier.getUser().getUserId().equals(currentUser.getUserId()))) {
+            throw new RuntimeException("You are not authorized to send emails for this order.");
+        }
+
+        String userEmail = order.getUser().getEmail(); // Email của người dùng thuê
+        sendEmail(userEmail, "Reminder: Your rental is about to expire, ",
+                "Dear " + userEmail + ",\n\n"
+                        + "We hope you're enjoying your rental of \"" + order.getRental().getToy().getName() + "\".\n"
+                        + "This is a friendly reminder that your rental period is nearing its end. Please ensure that you return the item by the due date: "
+                        + order.getRental().getDueDate() + ".\n\n"
+                        + "If you have any questions or need assistance, feel free to contact us.\n\n"
+                        + "Thank you for choosing our service!\n"
+                        + "Best regards,\n"
+                        + "The Toy Company Team\n");
+
+        return "Reminder email sent to " + userEmail;
+    }
+
+    private void sendEmail(String to, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
     }
 
 

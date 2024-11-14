@@ -13,7 +13,22 @@ public class RentalDto {
     private LocalDate requestDate;
     private Double rentalPrice;
     private Double totalPrice;
+    private LocalDate dueDate;
+    private String toyName;
+    public String getToyName() {
+        return toyName;
+    }
 
+    public void setToyName(String toyName) {
+        this.toyName = toyName;
+    }
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
     public int getQuantity() {
         return quantity;
     }

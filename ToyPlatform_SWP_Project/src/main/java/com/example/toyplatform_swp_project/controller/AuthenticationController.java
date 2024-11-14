@@ -23,10 +23,21 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         String response = authenticationService.registerUser(user);
-        if (response.equals("User registered successfully!")) {
-            return ResponseEntity.ok(response);
+        if (response.contains("OTP sent")) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-        return ResponseEntity.badRequest().body(response);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestParam int otp) {
+        String response = authenticationService.verifyOtp(otp);
+        if (response.equals("User registered successfully!")) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 
 

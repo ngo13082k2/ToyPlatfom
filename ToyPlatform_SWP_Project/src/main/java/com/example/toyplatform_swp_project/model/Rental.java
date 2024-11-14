@@ -22,23 +22,31 @@ public class Rental {
 
     @Column(name = "rental_duration")
     private Integer rentalDuration; // Duration in days, for example
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
 
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
     @Column(name = "request_date")
     private LocalDate requestDate;
 
     @Column(name = "rental_price")
     private Double rentalPrice; // Giá thuê
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
     @Column(name = "quantity")
-    private int quantity;
+    private Integer quantity;
     @Column(name = "total_price")
     private Double totalPrice; // Tổng giá
 

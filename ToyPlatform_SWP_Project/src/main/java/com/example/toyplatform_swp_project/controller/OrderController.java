@@ -47,5 +47,32 @@ public class OrderController {
         OrderDto orderDetail = orderService.getOrderDetail(orderId);
         return ResponseEntity.ok(orderDetail);
     }
+    @PutMapping("/{orderId}/return")
+    public ResponseEntity<String> returnOrder(@PathVariable Long orderId) {
+        try {
+            String message = orderService.returnOrder(orderId);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @GetMapping("/supplier/orders")
+    public ResponseEntity<List<OrderDto>> getOrdersByCurrentSupplier() {
+        try {
+            List<OrderDto> orders = orderService.getOrdersByCurrentSupplier();
+            return ResponseEntity.ok(orders);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+    @PostMapping("/{orderId}/send-reminder")
+    public ResponseEntity<String> sendReminderEmail(@PathVariable Long orderId) {
+        try {
+            String result = orderService.sendReminderEmail(orderId);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        }
+    }
 
 }
