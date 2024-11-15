@@ -22,4 +22,6 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     Long countCompletedOrders();
     @Query("SELECT o FROM Order o JOIN o.rental r JOIN r.toy t JOIN t.suppliers s WHERE s.supplierId = :supplierId")
     List<Order> findOrdersBySupplierId(@Param("supplierId") Long supplierId);
+
+    List<Order> findByStatus(String completed);
 }

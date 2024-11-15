@@ -1,6 +1,7 @@
 package com.example.toyplatform_swp_project.services;
 
 import com.example.toyplatform_swp_project.dto.OrderDto;
+import com.example.toyplatform_swp_project.model.Order;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.UnsupportedEncodingException;
@@ -14,4 +15,8 @@ public interface IOrderService {
     String returnOrder(Long orderId);
     List<OrderDto> getOrdersByCurrentSupplier();
     String sendReminderEmail(Long orderId);
+    List<Order> getCompletedOrders();
+    void updateOrderStatusToShipped(Long orderId);
+    String cancelOrder(Long orderId, String note);
+    List<Order> getCanceledOrders();
 }

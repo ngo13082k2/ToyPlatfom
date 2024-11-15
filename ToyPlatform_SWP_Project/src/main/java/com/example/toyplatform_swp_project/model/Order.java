@@ -43,6 +43,37 @@ public class Order {
     public String getTxnRef() {
         return txnRef;
     }
+    @Column(name = "user_name")
+    private String userName;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "address")
+    private String address;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
     @Column(name = "request_date")
     private LocalDate requestDate;
 
@@ -50,6 +81,15 @@ public class Order {
     private LocalDate dueDate;
     public LocalDate getRequestDate() {
         return requestDate;
+    }
+    @Column(name = "note")
+    private String note;
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public void setRequestDate(LocalDate requestDate) {

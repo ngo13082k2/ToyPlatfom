@@ -1,6 +1,7 @@
 package com.example.toyplatform_swp_project.controller;
 
 import com.example.toyplatform_swp_project.dto.OrderDto;
+import com.example.toyplatform_swp_project.model.Order;
 import com.example.toyplatform_swp_project.services.IOrderService;
 import com.example.toyplatform_swp_project.services.implement.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,6 +74,31 @@ public class OrderController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
+    }
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId, @RequestBody String note) {
+        String result = orderService.cancelOrder(orderId, note);
+        if ("Order has been canceled successfully.".equals(result)) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
+    }
+    @GetMapping("/completed")
+    public ResponseEntity<List<Order>> getCompletedOrders() {
+        List<Order> completedOrders = orderService.getCompletedOrders();
+        return ResponseEntity.ok(completedOrders);
+    }
+
+    @PostMapping("/{orderId}/mark-shipped")
+    public ResponseEntity<String> markOrderAsShipped(@PathVariable Long orderId) {
+        orderService.updateOrderStatusToShipped(orderId);
+        return ResponseEntity.ok("Order marked as shipped.");
+    }
+    @GetMapping("/canceled")
+    public ResponseEntity<List<Order>> getCanceledOrders() {
+        List<Order> canceledOrders = orderService.getCanceledOrders();
+        return ResponseEntity.ok(canceledOrders);
     }
 
 }

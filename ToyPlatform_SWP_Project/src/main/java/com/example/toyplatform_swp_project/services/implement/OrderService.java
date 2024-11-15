@@ -87,6 +87,21 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
     }
 
     Order order = mapToEntity(orderDto, rentalId);
+    User user = order.getUser();
+    if (user != null) {
+        orderDto.setUserName(user.getFullName());
+
+    }
+    String phoneNumber = orderDto.getPhoneNumber();
+    String address = orderDto.getAddress();
+
+    if (phoneNumber != null) {
+        order.setPhoneNumber(phoneNumber);
+    }
+
+    if (address != null) {
+        order.setAddress(address);
+    }
 
     if (order.getRental() != null) {
         Double rentalPrice = order.getRental().getRentalPrice();
@@ -426,6 +441,47 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         message.setText(body);
         mailSender.send(message);
     }
+
+    public List<Order> getCompletedOrders() {
+        return orderRepository.findByStatus("completed");
+    }
+    public void updateOrderStatusToShipped(Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setStatus("sent");
+            orderRepository.save(order);
+
+            User user = order.getUser();
+            if (user != null && user.getEmail() != null) {
+                sendEmail(user.getEmail(), "Your Order Status Update",
+                        "Dear " + user.getEmail() + ",\n\nYour order with ID " + orderId +
+                                " has been marked as 'sent'. Thank you for using our service.\n\nBest regards,\nToy Platform Team");
+            }
+        }
+    }
+    public String cancelOrder(Long orderId, String note) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            if ("completed".equalsIgnoreCase(order.getStatus())) {
+                order.setStatus("canceled");
+                order.setNote(note);
+                orderRepository.save(order);
+                return "Order has been canceled successfully.";
+            } else {
+                return "Only completed orders can be canceled.";
+            }
+        } else {
+            return "Order not found.";
+        }
+    }
+    public List<Order> getCanceledOrders() {
+        return orderRepository.findByStatus("canceled");
+    }
+
+
+
 
 
 }
