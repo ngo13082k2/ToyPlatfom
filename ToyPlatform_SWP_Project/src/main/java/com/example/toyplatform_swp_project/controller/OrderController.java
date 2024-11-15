@@ -89,6 +89,11 @@ public class OrderController {
         List<OrderDto> completedOrders = orderService.getCompletedOrdersByCurrentSupplier();
         return ResponseEntity.ok(completedOrders);
     }
+    @GetMapping("/rent")
+    public ResponseEntity<List<OrderDto>> getRentOrders() {
+        List<OrderDto> completedOrders = orderService.getRentOrdersByCurrentSupplier();
+        return ResponseEntity.ok(completedOrders);
+    }
 
     @PostMapping("/{orderId}/mark-shipped")
     public ResponseEntity<String> markOrderAsShipped(@PathVariable Long orderId) {

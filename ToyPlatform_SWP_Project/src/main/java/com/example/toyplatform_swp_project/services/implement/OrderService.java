@@ -219,6 +219,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         }
         dto.setStatus(order.getStatus());
         dto.setNote(order.getNote());
+        dto.setDueDate(order.getDueDate());
 
         if (order.getRental() != null) {
             Rental rental = order.getRental();
@@ -230,8 +231,10 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             rentalDto.setRentalDuration(rental.getRentalDuration());
             rentalDto.setQuantity(rental.getQuantity());
 
+
             if (rental.getToy() != null) {
-                rentalDto.setToyName(rental.getToy().getName()); // Lấy tên từ Toy
+                rentalDto.setToyName(rental.getToy().getName());
+                rentalDto.setImageUrl(rental.getToy().getImage());
             }
 
             dto.setRental(rentalDto);
@@ -379,7 +382,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             throw new RuntimeException("You are not authorized to return this order.");
         }
 
-        if (!"completed".equalsIgnoreCase(order.getStatus())) {
+        if (!"sent".equalsIgnoreCase(order.getStatus())) {
             throw new RuntimeException("Only completed orders can be returned.");
         }
 
@@ -444,13 +447,11 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
     }
 
     public List<OrderDto> getCompletedOrdersByCurrentSupplier() {
-        // Lấy người dùng hiện tại từ phiên đăng nhập
         User currentUser = authenticationService.getCurrentUser();
         if (currentUser == null) {
             throw new RuntimeException("No user is currently logged in.");
         }
 
-        // Tìm supplier dựa trên người dùng hiện tại
         Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
                 .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
 
@@ -461,7 +462,24 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
                         order.getRental().getToy().getSuppliers().contains(supplier))
                 .collect(Collectors.toList());
 
-        // Chuyển đổi danh sách đơn hàng thành danh sách DTO
+        return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
+    } public List<OrderDto> getRentOrdersByCurrentSupplier() {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        // Tìm supplier dựa trên người dùng hiện tại
+        Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
+                .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
+
+        // Lấy tất cả đơn hàng có trạng thái "completed" và lọc theo supplier
+        List<Order> orders = orderRepository.findByStatus("rent").stream()
+                .filter(order -> order.getRental() != null &&
+                        order.getRental().getToy() != null &&
+                        order.getRental().getToy().getSuppliers().contains(supplier))
+                .collect(Collectors.toList());
+
         return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
     }
     public void updateOrderStatusToShipped(Long orderId) {

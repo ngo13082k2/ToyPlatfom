@@ -19,4 +19,5 @@ public interface IOrderService {
     void updateOrderStatusToShipped(Long orderId);
     String cancelOrder(Long orderId, String note);
     List<OrderDto> getCanceledOrdersByCurrentSupplier();
+    List<OrderDto> getRentOrdersByCurrentSupplier();
 }

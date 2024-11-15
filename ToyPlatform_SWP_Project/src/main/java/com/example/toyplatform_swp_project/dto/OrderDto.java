@@ -14,6 +14,17 @@ public class OrderDto {
         this.username = username;
     }
 
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    private LocalDate dueDate;
+
+
 
     private String username;
     private Long rentalId;
