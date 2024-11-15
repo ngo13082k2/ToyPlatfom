@@ -218,6 +218,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             dto.setVoucherCode(order.getVoucher().getCode());
         }
         dto.setStatus(order.getStatus());
+        dto.setNote(order.getNote());
 
         if (order.getRental() != null) {
             Rental rental = order.getRental();
@@ -442,8 +443,26 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         mailSender.send(message);
     }
 
-    public List<Order> getCompletedOrders() {
-        return orderRepository.findByStatus("completed");
+    public List<OrderDto> getCompletedOrdersByCurrentSupplier() {
+        // Lấy người dùng hiện tại từ phiên đăng nhập
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        // Tìm supplier dựa trên người dùng hiện tại
+        Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
+                .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
+
+        // Lấy tất cả đơn hàng có trạng thái "completed" và lọc theo supplier
+        List<Order> orders = orderRepository.findByStatus("completed").stream()
+                .filter(order -> order.getRental() != null &&
+                        order.getRental().getToy() != null &&
+                        order.getRental().getToy().getSuppliers().contains(supplier))
+                .collect(Collectors.toList());
+
+        // Chuyển đổi danh sách đơn hàng thành danh sách DTO
+        return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
     }
     public void updateOrderStatusToShipped(Long orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -476,8 +495,24 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             return "Order not found.";
         }
     }
-    public List<Order> getCanceledOrders() {
-        return orderRepository.findByStatus("canceled");
+    public List<OrderDto> getCanceledOrdersByCurrentSupplier() {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
+                .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
+
+        // Lấy tất cả đơn hàng có trạng thái "canceled" và lọc theo supplier
+        List<Order> orders = orderRepository.findByStatus("canceled").stream()
+                .filter(order -> order.getRental() != null &&
+                        order.getRental().getToy() != null &&
+                        order.getRental().getToy().getSuppliers().contains(supplier))
+                .collect(Collectors.toList());
+
+        // Chuyển đổi danh sách đơn hàng thành danh sách DTO
+        return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
     }
 
 

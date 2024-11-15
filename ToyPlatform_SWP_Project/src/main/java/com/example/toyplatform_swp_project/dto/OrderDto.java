@@ -23,6 +23,16 @@ public class OrderDto {
     private String userName;
     private String phoneNumber;
     private String address;
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    private String note;
     public String getUserName() {
         return userName;
     }

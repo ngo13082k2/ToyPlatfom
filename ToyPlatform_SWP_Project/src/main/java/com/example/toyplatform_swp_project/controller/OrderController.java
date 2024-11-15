@@ -85,8 +85,8 @@ public class OrderController {
         }
     }
     @GetMapping("/completed")
-    public ResponseEntity<List<Order>> getCompletedOrders() {
-        List<Order> completedOrders = orderService.getCompletedOrders();
+    public ResponseEntity<List<OrderDto>> getCompletedOrders() {
+        List<OrderDto> completedOrders = orderService.getCompletedOrdersByCurrentSupplier();
         return ResponseEntity.ok(completedOrders);
     }
 
@@ -96,8 +96,8 @@ public class OrderController {
         return ResponseEntity.ok("Order marked as shipped.");
     }
     @GetMapping("/canceled")
-    public ResponseEntity<List<Order>> getCanceledOrders() {
-        List<Order> canceledOrders = orderService.getCanceledOrders();
+    public ResponseEntity<List<OrderDto>> getCanceledOrders() {
+        List<OrderDto> canceledOrders = orderService.getCanceledOrdersByCurrentSupplier();
         return ResponseEntity.ok(canceledOrders);
     }
 

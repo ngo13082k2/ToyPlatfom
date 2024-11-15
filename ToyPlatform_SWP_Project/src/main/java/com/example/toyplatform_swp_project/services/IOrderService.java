@@ -15,8 +15,8 @@ public interface IOrderService {
     String returnOrder(Long orderId);
     List<OrderDto> getOrdersByCurrentSupplier();
     String sendReminderEmail(Long orderId);
-    List<Order> getCompletedOrders();
+    List<OrderDto> getCompletedOrdersByCurrentSupplier();
     void updateOrderStatusToShipped(Long orderId);
     String cancelOrder(Long orderId, String note);
-    List<Order> getCanceledOrders();
+    List<OrderDto> getCanceledOrdersByCurrentSupplier();
 }
