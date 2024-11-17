@@ -339,6 +339,9 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             if ("00".equals(responseCode)) {
                 Order order = orderRepository.findByTxnRef(vnpTxnRef);
                 if (order != null) {
+                    if ("completed".equalsIgnoreCase(order.getStatus())) {
+                        return "Đơn hàng đã được xử lý trước đó.";
+                    }
                     order.setStatus("completed");
                     orderRepository.save(order);
 
