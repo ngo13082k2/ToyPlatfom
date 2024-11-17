@@ -89,7 +89,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
     Order order = mapToEntity(orderDto, rentalId);
     User user = order.getUser();
     if (user != null) {
-        orderDto.setUserName(user.getFullName());
+        order.setUserName(user.getFullName());
 
     }
     String phoneNumber = orderDto.getPhoneNumber();
