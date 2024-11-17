@@ -105,5 +105,10 @@ public class OrderController {
         List<OrderDto> canceledOrders = orderService.getCanceledOrdersByCurrentSupplier();
         return ResponseEntity.ok(canceledOrders);
     }
+    @GetMapping("/sent")
+    public ResponseEntity<List<OrderDto>> getSentOrders() {
+        List<OrderDto> canceledOrders = orderService.getSentOrdersByCurrentSupplier();
+        return ResponseEntity.ok(canceledOrders);
+    }
 
 }

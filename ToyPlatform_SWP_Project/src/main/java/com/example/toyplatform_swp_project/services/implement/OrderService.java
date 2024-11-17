@@ -383,7 +383,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         }
 
         if (!"sent".equalsIgnoreCase(order.getStatus())) {
-            throw new RuntimeException("Only completed orders can be returned.");
+            throw new RuntimeException("Only sent orders can be returned.");
         }
 
         order.setStatus("returned");
@@ -400,14 +400,17 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
                 .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
 
+        Long supplierId = supplier.getSupplierId();
+
         List<Order> orders = orderRepository.findAll().stream()
                 .filter(order -> order.getRental() != null &&
                         order.getRental().getToy() != null &&
-                        order.getRental().getToy().getSuppliers().contains(supplier))
+                        supplierId.equals(order.getRental().getToy().getSupplierId()))
                 .collect(Collectors.toList());
 
         return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
     }
+
     public String sendReminderEmail(Long orderId) {
         User currentUser = authenticationService.getCurrentUser();
         if (currentUser == null) {
@@ -456,10 +459,12 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
                 .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
 
         // Lấy tất cả đơn hàng có trạng thái "completed" và lọc theo supplier
+        Long supplierId = supplier.getSupplierId();
+
         List<Order> orders = orderRepository.findByStatus("completed").stream()
                 .filter(order -> order.getRental() != null &&
                         order.getRental().getToy() != null &&
-                        order.getRental().getToy().getSuppliers().contains(supplier))
+                        supplierId.equals(order.getRental().getToy().getSupplierId()))
                 .collect(Collectors.toList());
 
         return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
@@ -523,10 +528,33 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
                 .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
 
         // Lấy tất cả đơn hàng có trạng thái "canceled" và lọc theo supplier
+        Long supplierId = supplier.getSupplierId();
+
         List<Order> orders = orderRepository.findByStatus("canceled").stream()
                 .filter(order -> order.getRental() != null &&
                         order.getRental().getToy() != null &&
-                        order.getRental().getToy().getSuppliers().contains(supplier))
+                        supplierId.equals(order.getRental().getToy().getSupplierId()))
+                .collect(Collectors.toList());
+
+        // Chuyển đổi danh sách đơn hàng thành danh sách DTO
+        return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
+    }
+    public List<OrderDto> getSentOrdersByCurrentSupplier() {
+        User currentUser = authenticationService.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("No user is currently logged in.");
+        }
+
+        Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
+                .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
+
+        // Lấy tất cả đơn hàng có trạng thái "canceled" và lọc theo supplier
+        Long supplierId = supplier.getSupplierId();
+
+        List<Order> orders = orderRepository.findByStatus("sent").stream()
+                .filter(order -> order.getRental() != null &&
+                        order.getRental().getToy() != null &&
+                        supplierId.equals(order.getRental().getToy().getSupplierId()))
                 .collect(Collectors.toList());
 
         // Chuyển đổi danh sách đơn hàng thành danh sách DTO
