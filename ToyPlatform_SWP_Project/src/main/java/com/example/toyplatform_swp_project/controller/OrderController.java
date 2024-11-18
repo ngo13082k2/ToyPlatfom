@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -109,6 +110,11 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> getSentOrders() {
         List<OrderDto> canceledOrders = orderService.getSentOrdersByCurrentSupplier();
         return ResponseEntity.ok(canceledOrders);
+    }
+    @GetMapping("/totals-by-status")
+    public ResponseEntity<Map<String, Long>> getTotalOrdersByStatuses() {
+        Map<String, Long> totals = orderService.getTotalOrdersByStatuses();
+        return ResponseEntity.ok(totals);
     }
 
 }

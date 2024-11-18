@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/toys")
@@ -117,6 +118,11 @@ public class ToyController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @GetMapping("/total")
+    public ResponseEntity<Map<String,Long>> getTotalToys() {
+        Map<String,Long> totalToys = toyService.getTotalToys();
+        return ResponseEntity.ok(totalToys);
     }
 
 

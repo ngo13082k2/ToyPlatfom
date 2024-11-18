@@ -6,6 +6,7 @@ import com.example.toyplatform_swp_project.dto.SupplierDto;
 import com.example.toyplatform_swp_project.exception.DataNotFoundException;
 import com.example.toyplatform_swp_project.model.Order;
 import com.example.toyplatform_swp_project.model.Supplier;
+import com.example.toyplatform_swp_project.model.enums.Role;
 import com.example.toyplatform_swp_project.repository.OrderRepository;
 import com.example.toyplatform_swp_project.repository.SupplierRepository;
 import com.example.toyplatform_swp_project.repository.ToyRepository;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,8 +83,30 @@ import java.util.stream.Collectors;
         }).collect(Collectors.toList());
     }
 
+
+
     public Double calculateTotalRentalRevenueBySupplierId(Long supplierId) {
         return orderRepository.calculateTotalRentalRevenueBySupplierId(supplierId);
+    }
+    public List<Supplier> getAllSuppliersByRoleSupplier() {
+        return supplierRepository.findByUser_Role(Role.SUPPLIER);
+    }
+    public String changeSupplierStatus(Long supplierId) {
+        Optional<Supplier> supplierOptional = supplierRepository.findById(supplierId);
+        if (supplierOptional.isPresent()) {
+            Supplier supplier = supplierOptional.get();
+            String currentStatus = supplier.getUser().getStatus();
+            if ("ACTIVE".equalsIgnoreCase(currentStatus)) {
+                supplier.getUser().setStatus("DEACTIVE");
+            } else if ("DEACTIVE".equalsIgnoreCase(currentStatus)) {
+                supplier.getUser().setStatus("ACTIVE");
+            } else {
+                return "Invalid status, unable to toggle.";
+            }
+            supplierRepository.save(supplier);
+            return "Supplier status changed successfully.";
+        }
+        return "Supplier not found.";
     }
 
         public SupplierDto mapToDto(Supplier supplier) {

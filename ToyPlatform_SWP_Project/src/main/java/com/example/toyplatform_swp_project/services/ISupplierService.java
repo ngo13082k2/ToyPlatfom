@@ -15,4 +15,6 @@ public interface ISupplierService {
     List<OrderResponseDto> getCompletedOrdersBySupplierId(Long supplierId);
     Double calculateTotalRentalRevenueBySupplierId(Long supplierId);
     Supplier getSupplierById(Long supplierId) throws DataNotFoundException;
+    List<Supplier> getAllSuppliersByRoleSupplier();
+    String changeSupplierStatus(Long supplierId);
 }

@@ -24,4 +24,6 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findOrdersBySupplierId(@Param("supplierId") Long supplierId);
 
     List<Order> findByStatus(String completed);
+    Long countByStatus(String status);
+
 }

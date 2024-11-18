@@ -67,4 +67,15 @@ public class SupplierController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<Supplier>> getAllSuppliersByRoleSupplier() {
+        List<Supplier> suppliers = supplierService.getAllSuppliersByRoleSupplier();
+        return ResponseEntity.ok(suppliers);
+    }
+
+    @PutMapping("/change-status/{supplierId}")
+    public ResponseEntity<String> toggleSupplierStatus(@PathVariable Long supplierId) {
+        String response = supplierService.changeSupplierStatus(supplierId);
+        return ResponseEntity.ok(response);
+    }
 }

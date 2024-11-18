@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -127,6 +128,14 @@ public class ToyService implements IToyservice {
         Supplier supplier = supplierRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Supplier not found for user with id: " + userId));
         return supplier.getSupplierId();
+    }
+    public Map<String,Long> getTotalToys() {
+        Long total = toyRepository.count();
+        Map<String, Long> totals = new HashMap<>();
+        totals.put("total Toy", total);
+
+
+        return totals;
     }
 
 

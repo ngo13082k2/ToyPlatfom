@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 public interface IOrderService {
     OrderDto createOrder(OrderDto orderDto, HttpServletRequest request);
@@ -21,4 +22,5 @@ public interface IOrderService {
     List<OrderDto> getCanceledOrdersByCurrentSupplier();
     List<OrderDto> getRentOrdersByCurrentSupplier();
     List<OrderDto> getSentOrdersByCurrentSupplier();
+    Map<String, Long> getTotalOrdersByStatuses();
 }

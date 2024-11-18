@@ -500,7 +500,7 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             User user = order.getUser();
             if (user != null && user.getEmail() != null) {
                 sendEmail(user.getEmail(), "Your Order Status Update",
-                        "Dear " + user.getEmail() + ",\n\nYour order with ID " + orderId +
+                        "Dear " + user.getEmail() + ",\n\nYour order with Toy Name " + order.getRental().getToy().getName() +
                                 " has been marked as 'sent'. Thank you for using our service.\n\nBest regards,\nToy Platform Team");
             }
         }
@@ -551,7 +551,6 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         Supplier supplier = supplierRepository.findByUser_UserId(currentUser.getUserId())
                 .orElseThrow(() -> new RuntimeException("No supplier found for the current user."));
 
-        // Lấy tất cả đơn hàng có trạng thái "canceled" và lọc theo supplier
         Long supplierId = supplier.getSupplierId();
 
         List<Order> orders = orderRepository.findByStatus("sent").stream()
@@ -560,8 +559,20 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
                         supplierId.equals(order.getRental().getToy().getSupplierId()))
                 .collect(Collectors.toList());
 
-        // Chuyển đổi danh sách đơn hàng thành danh sách DTO
         return orders.stream().map(this::mapToDtoGetRental).collect(Collectors.toList());
+    }
+    public Map<String, Long> getTotalOrdersByStatuses() {
+        Long totalCanceled = getTotalOrdersByStatus("canceled");
+        Long totalCompleted = getTotalOrdersByStatus("completed");
+
+        Map<String, Long> totals = new HashMap<>();
+        totals.put("canceled", totalCanceled);
+        totals.put("completed", totalCompleted);
+
+        return totals;
+    }
+    private Long getTotalOrdersByStatus(String status) {
+        return orderRepository.countByStatus(status);
     }
 
 
