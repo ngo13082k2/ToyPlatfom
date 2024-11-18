@@ -420,16 +420,27 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
             throw new RuntimeException("No user is currently logged in.");
         }
 
-        // Tìm đơn hàng và kiểm tra quyền truy cập
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
 
-        // Kiểm tra xem người dùng hiện tại có phải là nhà cung cấp sản phẩm không
-        if (!order.getRental().getToy().getSuppliers().stream()
-                .anyMatch(supplier -> supplier.getUser().getUserId().equals(currentUser.getUserId()))) {
+        if (order.getRental() == null || order.getRental().getToy() == null) {
+            throw new RuntimeException("Rental or Toy information is missing for this order.");
+        }
+
+        Long supplierId = order.getRental().getToy().getSupplierId();
+        if (supplierId == null) {
+            throw new RuntimeException("Supplier information is missing for this Toy.");
+        }
+
+        // Kiểm tra quyền dựa trên Supplier
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new RuntimeException("Supplier not found with ID: " + supplierId));
+
+        if (!supplier.getUser().getUserId().equals(currentUser.getUserId())) {
             throw new RuntimeException("You are not authorized to send emails for this order.");
         }
 
+        // Gửi email
         String userEmail = order.getUser().getEmail(); // Email của người dùng thuê
         sendEmail(userEmail, "Reminder: Your rental is about to expire, ",
                 "Dear " + userEmail + ",\n\n"
@@ -443,6 +454,8 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
 
         return "Reminder email sent to " + userEmail;
     }
+
+
 
     private void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
