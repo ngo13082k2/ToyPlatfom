@@ -523,17 +523,32 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
             if ("completed".equalsIgnoreCase(order.getStatus())) {
+                Rental rental = order.getRental();
+                if (rental != null) {
+                    Toy toy = rental.getToy();
+                    int rentalQuantity = rental.getQuantity();
+                    if (toy != null) {
+                        toy.setAmount(toy.getAmount() + rentalQuantity);
+                        toyRepository.save(toy);
+                    } else {
+                        return "Không tìm thấy thông tin đồ chơi để cập nhật số lượng!";
+                    }
+                } else {
+                    return "Không tìm thấy thông tin thuê đồ chơi để cập nhật!";
+                }
+
                 order.setStatus("canceled");
                 order.setNote(note);
                 orderRepository.save(order);
-                return "Order has been canceled successfully.";
+                return "Đơn hàng đã được hủy thành công và số lượng đồ chơi đã được hoàn lại.";
             } else {
-                return "Only completed orders can be canceled.";
+                return "Chỉ các đơn hàng đã hoàn tất mới có thể hủy.";
             }
         } else {
-            return "Order not found.";
+            return "Không tìm thấy đơn hàng.";
         }
     }
+
     public List<OrderDto> getCanceledOrdersByCurrentSupplier() {
         User currentUser = authenticationService.getCurrentUser();
         if (currentUser == null) {
