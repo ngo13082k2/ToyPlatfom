@@ -117,4 +117,18 @@ public class OrderController {
         return ResponseEntity.ok(totals);
     }
 
+    @GetMapping("/{orderId}/supplier-address")
+    public ResponseEntity<String> getSupplierAddress(@PathVariable Long orderId) {
+        try {
+            String address = orderService.getSupplierAddressFromOrder(orderId);
+            if (address.contains("Không")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(address);
+            }
+            return ResponseEntity.ok(address);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi: " + e.getMessage());
+        }
+    }
+
 }

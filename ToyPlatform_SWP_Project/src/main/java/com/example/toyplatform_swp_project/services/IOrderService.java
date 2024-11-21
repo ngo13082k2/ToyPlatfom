@@ -23,4 +23,5 @@ public interface IOrderService {
     List<OrderDto> getRentOrdersByCurrentSupplier();
     List<OrderDto> getSentOrdersByCurrentSupplier();
     Map<String, Long> getTotalOrdersByStatuses();
+    String getSupplierAddressFromOrder(Long orderId);
 }

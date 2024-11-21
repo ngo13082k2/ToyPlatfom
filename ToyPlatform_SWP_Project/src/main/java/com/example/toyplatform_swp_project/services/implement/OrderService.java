@@ -602,6 +602,43 @@ public OrderDto createOrder(OrderDto orderDto, HttpServletRequest request) {
     private Long getTotalOrdersByStatus(String status) {
         return orderRepository.countByStatus(status);
     }
+    public String getSupplierAddressFromOrder(Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            Rental rental = order.getRental();
+            if (rental != null) {
+                Toy toy = rental.getToy();
+                if (toy != null) {
+                    Long supplierId = toy.getSupplierId();
+                    if (supplierId != null) {
+                        Optional<Supplier> supplierOptional = supplierRepository.findById(supplierId);
+                        if (supplierOptional.isPresent()) {
+                            Supplier supplier = supplierOptional.get();
+                            User supplierUser = supplier.getUser();
+                            if (supplierUser != null) {
+                                return supplierUser.getAddress(); // Trả về address của Supplier
+                            } else {
+                                return "Không tìm thấy người dùng của nhà cung cấp!";
+                            }
+                        } else {
+                            return "Không tìm thấy nhà cung cấp!";
+                        }
+                    } else {
+                        return "Không có SupplierId cho đồ chơi này!";
+                    }
+                } else {
+                    return "Không tìm thấy đồ chơi!";
+                }
+            } else {
+                return "Không tìm thấy thông tin thuê đồ chơi!";
+            }
+        } else {
+            return "Không tìm thấy đơn hàng!";
+        }
+    }
+
+
 
 
 
